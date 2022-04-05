@@ -1,5 +1,4 @@
 import torch
-from torch import nn
 from sklearn.metrics import f1_score
 from model import AlexNet
 
@@ -29,14 +28,14 @@ def val(model, loss_fn, dataLoader):
             correct += (predict == label).sum().item()
 
             step += 1
-            total_f1 += f1_score(label, predict, average='macro')
+            total_f1 += f1_score(label.cpu(), predict.cpu(), average='macro')
 
         # 计算损失值
-        print("Val Data:   Loss: {:.6f}, accuracy: {:.6f}%,  F1-score: {:.6f}".format(test_loss / total, 100 * (correct / total), total_f1 / step))
-    return test_loss / total, correct / total, total_f1 / step
+        print("Val Data:   Loss: {:.6f}, accuracy: {:.6f}%,  F1-score: {:.6f}".format(test_loss / step, 100 * (correct / total), total_f1 / step))
+    return test_loss / step, correct / total, total_f1 / step
+
 
 if __name__ == '__main__':
     model = AlexNet().to(device)
     # 加载模型
     model.load_state_dict(torch.load('./models/AlexModel.pth'))
-    pass

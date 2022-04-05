@@ -45,13 +45,13 @@ def train(dataLoader, model, loss_fn, optimizer):
 
         step += 1
         total_loss += loss.item()
-        total_f1 += f1_score(labels, predict, average='macro')
+        total_f1 += f1_score(labels.cpu(), predict.cpu(), average='macro')
 
-        # 每10轮展示参数
-        if batch % 10 == 0:
+        # 每20轮展示参数
+        if batch % 20 == 0:
             # loss.item()表示当前loss的数值
-            print("Train Data:   Loss: {:.6f}, accuracy: {:.6f}%,  F1-score: {:.6f}".format(loss.item(), 100 * (correct / total), total_f1 / step))
-    return total_loss / total, correct / total, total_f1 / step
+            print("Train Data:   Loss: {:.6f}, accuracy: {:.6f}%,  F1-score: {:.6f}".format(total_loss / step, 100 * (correct / total), total_f1 / step))
+    return total_loss / step, correct / total, total_f1 / step
 
 
 # 验证函数
@@ -78,11 +78,11 @@ def val(model, loss_fn, dataLoader):
             correct += (predict == label).sum().item()
 
             step += 1
-            total_f1 += f1_score(label, predict, average='macro')
+            total_f1 += f1_score(label.cpu(), predict.cpu(), average='macro')
 
         # 计算损失值
-        print("Val Data:   Loss: {:.6f}, accuracy: {:.6f}%,  F1-score: {:.6f}".format(test_loss / total, 100 * (correct / total), total_f1 / step))
-    return test_loss / total, correct / total, total_f1 / step
+        print("Val Data:   Loss: {:.6f}, accuracy: {:.6f}%,  F1-score: {:.6f}".format(test_loss / step, 100 * (correct / total), total_f1 / step))
+    return test_loss / step, correct / total, total_f1 / step
 
 
 def matplot_comparison(train_data, val_data, xlabel, ylabel, title):
@@ -92,6 +92,7 @@ def matplot_comparison(train_data, val_data, xlabel, ylabel, title):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
+    plt.savefig(title + '.png')
     plt.show()
 
 
